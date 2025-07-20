@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+// Backend API base URL - same as main API service
+const API_BASE_URL = "http://34.134.72.176:3001/api";
 
 // Create axios instance with admin token
 const createAdminApi = (token: string) => {
