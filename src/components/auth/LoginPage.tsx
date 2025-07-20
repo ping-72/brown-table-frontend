@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
 
   const testBackendConnection = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/health");
+      const response = await fetch("http://34.134.72.176:3001/api/health");
       if (response.ok) {
         setConnectionStatus("connected");
         console.log("✅ Backend connection successful");
