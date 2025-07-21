@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Filter,
   Plus,
@@ -18,6 +18,7 @@ import { useBooking } from "../context/BookingContext";
 
 const RestaurantMenu: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [dietaryFilter, setDietaryFilter] = useState<"all" | "veg" | "non-veg">(
     "all"
@@ -25,8 +26,73 @@ const RestaurantMenu: React.FC = () => {
   const { groupMembers, groupInfo } = useGroupMembers();
   const { refreshOrderData, loading } = useBooking();
 
+  // Popup state
+  const [showPopup, setShowPopup] = useState(
+    location.state && location.state.showGroupPopup ? true : false
+  );
+
+  // Remove popup state from history after first render
+  React.useEffect(() => {
+    if (showPopup && location.state && location.state.showGroupPopup) {
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [showPopup, location, navigate]);
+
+  const handleInvite = () => {
+    setShowPopup(false);
+    navigate("/invite");
+  };
+
+  const handleGroupOrder = () => {
+    setShowPopup(false);
+  };
+
+  const handleOrderMyself = () => {
+    setShowPopup(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-coffee-50 via-latte-50 to-cream-50">
+      {/* Popup Modal */}
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center relative">
+            <h2 className="text-2xl font-bold mb-4 text-coffee-900">
+              How would you like to order?
+            </h2>
+            <p className="mb-6 text-coffee-700">
+              Choose an option for your group order:
+            </p>
+            <div className="flex flex-col gap-4">
+              {/* <button
+                className="w-full py-3 rounded-lg bg-[#4d3a00] text-white font-semibold text-lg hover:bg-[#6e6240] transition-colors"
+                onClick={handleGroupOrder}
+              >
+                Group order
+              </button> */}
+              <button
+                className="w-full py-3 rounded-lg bg-amber-100 text-[#4d3a00] font-semibold text-lg hover:bg-amber-200 transition-colors"
+                onClick={handleInvite}
+              >
+                Invite your guests to order food
+              </button>
+              <button
+                className="w-full py-3 rounded-lg bg-gray-100 text-gray-800 font-semibold text-lg hover:bg-gray-200 transition-colors"
+                onClick={handleOrderMyself}
+              >
+                I'll order myself
+              </button>
+            </div>
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+              onClick={() => setShowPopup(false)}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
       {/* Elegant Hero Section */}
       <section className="relative h-80 lg:h-96 overflow-hidden">
         <div className="absolute inset-0">

@@ -21,7 +21,7 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
           <button
             key={count}
             onClick={() => onGuestsChange(count)}
-            className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-full border text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#85754d] focus:border-[#85754d] ${
+            className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-full border text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#85754d] focus:border-[#85754d] m-1 ${
               guests === count
                 ? "bg-[#85754d] text-white border-[#85754d]"
                 : "bg-white text-black border-[#85754d] hover:bg-[#85754d]/10"

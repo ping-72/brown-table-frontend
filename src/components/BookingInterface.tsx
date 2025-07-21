@@ -18,14 +18,14 @@ const BookingInterface: React.FC = () => {
     setCheckoutTime,
     setCurrentGroupId,
   } = useBooking();
-  
-  const { 
-    groupInfo, 
-    createGroup, 
-    loading: groupLoading, 
-    error: groupError 
+
+  const {
+    groupInfo,
+    createGroup,
+    loading: groupLoading,
+    error: groupError,
   } = useGroupMembers();
-  
+
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [guestCount, setGuestCount] = useState(1);
@@ -34,43 +34,11 @@ const BookingInterface: React.FC = () => {
     setGuestCount(count);
   };
 
-  const handleCreateGroup = async () => {
+  const handleOrder = async () => {
     if (!arrivalTime || !checkoutTime || !selectedDate || !user) {
-      setLocalError("Please fill in all required fields and ensure you're logged in");
-      return;
-    }
-
-    try {
-      setIsCreatingGroup(true);
-      setLocalError(null);
-      
-      const groupId = await createGroup({
-        adminName: user.name,
-        adminId: user.id,
-        arrivalTime,
-        departureTime: checkoutTime,
-        date: selectedDate,
-        guestCount: guestCount,
-      });
-
-      // Set the current group ID in booking context
-      setCurrentGroupId(groupId);
-
-      console.log("✅ Group created successfully with ID:", groupId);
-      
-      // Navigate to invite page
-      navigate("/invite");
-    } catch (error: any) {
-      console.error("❌ Failed to create group:", error);
-      setLocalError(error.message);
-    } finally {
-      setIsCreatingGroup(false);
-    }
-  };
-
-  const handleOrderForAll = async () => {
-    if (!arrivalTime || !checkoutTime || !selectedDate || !user) {
-      setLocalError("Please fill in all required fields and ensure you're logged in");
+      setLocalError(
+        "Please fill in all required fields and ensure you're logged in"
+      );
       return;
     }
 
@@ -92,8 +60,8 @@ const BookingInterface: React.FC = () => {
         setCurrentGroupId(groupId);
       }
 
-      // Navigate to group order page
-      navigate("/group-order");
+      // Navigate to menu page with popup state
+      navigate("/menu", { state: { showGroupPopup: true } });
     } catch (error: any) {
       console.error("❌ Failed to create group:", error);
       setLocalError(error.message);
@@ -106,7 +74,7 @@ const BookingInterface: React.FC = () => {
   const displayError = localError || groupError;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 sm:py-0 sm:pt-16 mb-20">
+    <div className="min-h-screen bg-gray-50 py-8 sm:py-0 sm:pt-16 mb-20 -mt-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
@@ -124,12 +92,6 @@ const BookingInterface: React.FC = () => {
           </div>
 
           <div className="p-6 space-y-8">
-            {/* Guest Selector */}
-            <GuestSelector
-              guests={guestCount}
-              onGuestsChange={handleGuestCountChange}
-            />
-
             {/* Date & Time Selector */}
             <DateTimeSelector
               selectedDate={selectedDate}
@@ -139,24 +101,16 @@ const BookingInterface: React.FC = () => {
               checkoutTime={checkoutTime}
               onCheckoutTimeChange={setCheckoutTime}
             />
+            {/* Guest Selector */}
+            <GuestSelector
+              guests={guestCount}
+              onGuestsChange={handleGuestCountChange}
+            />
 
             {/* Action Buttons */}
             <div className="flex flex-row justify-center gap-4 bottom-10 left-0 right-0 fixed sm:mx-2 mx-6">
               <button
-                disabled={
-                  arrivalTime === "" ||
-                  checkoutTime === "" ||
-                  selectedDate === "" ||
-                  isLoading ||
-                  !user
-                }
-                onClick={handleCreateGroup}
-                className="flex-1 bg-[#4d3a00] text-white py-3 rounded-full font-medium text-base hover:bg-[#6e6240] transition-colors max-w-44 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Creating..." : "Invite members"}
-              </button>
-              <button
-                onClick={handleOrderForAll}
+                onClick={handleOrder}
                 className="flex-1 bg-[#4d3a00] text-white py-3 rounded-full font-medium text-base hover:bg-[#6e6240] transition-colors max-w-44 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={
                   arrivalTime === "" ||
@@ -166,7 +120,7 @@ const BookingInterface: React.FC = () => {
                   !user
                 }
               >
-                {isLoading ? "Creating..." : "Order for all"}
+                {isLoading ? "Creating..." : "Order"}
               </button>
             </div>
           </div>

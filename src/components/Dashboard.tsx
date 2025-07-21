@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-coffee-50 via-latte-50 to-cream-50">
+    <div className="min-h-screen bg-gradient-to-br from-coffee-50 via-latte-50 to-cream-50 -mt-18">
       {/* Hero Section with enhanced elegance */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background image with overlay */}
@@ -83,13 +83,13 @@ const Dashboard: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-cream to-latte-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
 
-            <button
+            {/* <button
               onClick={handleViewMenu}
               className="group relative px-10 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white hover:text-coffee-900 hover:scale-105 flex items-center space-x-3"
             >
               <span>View Menu</span>
               <ChefHat className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-            </button>
+            </button> */}
           </div>
         </div>
       </section>

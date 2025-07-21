@@ -38,7 +38,7 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
         const period = hour >= 12 ? "PM" : "AM";
         if (hour > 12) hour -= 12;
         if (hour === 0) hour = 12;
-        
+
         setArrivalHour(hour.toString());
         setArrivalMinute(minute);
         setArrivalPeriod(period);
@@ -55,13 +55,20 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
         const period = hour >= 12 ? "PM" : "AM";
         if (hour > 12) hour -= 12;
         if (hour === 0) hour = 12;
-        
+
         setCheckoutHour(hour.toString());
         setCheckoutMinute(minute);
         setCheckoutPeriod(period);
       }
     }
   }, [checkoutTime]);
+
+  // Set today as default date if no date is selected
+  useEffect(() => {
+    if (!selectedDate) {
+      onDateChange(new Date().toISOString().split("T")[0]);
+    }
+  }, [selectedDate, onDateChange]);
 
   // Convert 12-hour to 24-hour format
   const convertTo24Hour = (hour: string, minute: string, period: string) => {
@@ -75,40 +82,46 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   };
 
   // Handle arrival time changes
-  const handleArrivalTimeChange = (hour?: string, minute?: string, period?: string) => {
+  const handleArrivalTimeChange = (
+    hour?: string,
+    minute?: string,
+    period?: string
+  ) => {
     const newHour = hour || arrivalHour;
     const newMinute = minute || arrivalMinute;
     const newPeriod = period || arrivalPeriod;
-    
+
     if (hour) setArrivalHour(hour);
     if (minute) setArrivalMinute(minute);
     if (period) setArrivalPeriod(period);
-    
+
     const time24 = convertTo24Hour(newHour, newMinute, newPeriod);
     onArrivalTimeChange(time24);
   };
 
   // Handle checkout time changes
-  const handleCheckoutTimeChange = (hour?: string, minute?: string, period?: string) => {
+  const handleCheckoutTimeChange = (
+    hour?: string,
+    minute?: string,
+    period?: string
+  ) => {
     const newHour = hour || checkoutHour;
     const newMinute = minute || checkoutMinute;
     const newPeriod = period || checkoutPeriod;
-    
+
     if (hour) setCheckoutHour(hour);
     if (minute) setCheckoutMinute(minute);
     if (period) setCheckoutPeriod(period);
-    
+
     const time24 = convertTo24Hour(newHour, newMinute, newPeriod);
     onCheckoutTimeChange(time24);
   };
 
   // Generate hour options (1-12)
   const hourOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-  
+
   // Generate minute options
-  const minuteOptions = [
-    "00", "15", "30", "45"
-  ];
+  const minuteOptions = ["00", "15", "30", "45"];
 
   return (
     <div className="space-y-6">
@@ -117,29 +130,61 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Select Date
         </h3>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => onDateChange(e.target.value)}
-          min={new Date().toISOString().split("T")[0]}
-          max={
-            new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0]
-          }
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4d3a00] focus:border-[#4d3a00] transition-colors"
-        />
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => onDateChange(new Date().toISOString().split("T")[0])}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+              selectedDate === new Date().toISOString().split("T")[0]
+                ? "bg-[#4d3a00] text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Today
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const tomorrow = new Date();
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              onDateChange(tomorrow.toISOString().split("T")[0]);
+            }}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+              selectedDate ===
+              new Date(Date.now() + 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0]
+                ? "bg-[#4d3a00] text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Tomorrow
+          </button>
+        </div>
+        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+          <span className="text-sm text-gray-600">
+            Selected date:{" "}
+            <span className="font-semibold text-gray-900">
+              {new Date(selectedDate).toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          </span>
+        </div>
       </div>
 
       {/* Arrival Time Selection */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Arrival Time
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Reach by</h3>
         <div className="grid grid-cols-3 gap-3">
           {/* Hour */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Hour</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Hour
+            </label>
             <div className="relative">
               <select
                 value={arrivalHour}
@@ -158,11 +203,15 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 
           {/* Minute */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Minute</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Minute
+            </label>
             <div className="relative">
               <select
                 value={arrivalMinute}
-                onChange={(e) => handleArrivalTimeChange(undefined, e.target.value)}
+                onChange={(e) =>
+                  handleArrivalTimeChange(undefined, e.target.value)
+                }
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4d3a00] focus:border-[#4d3a00] appearance-none cursor-pointer"
               >
                 {minuteOptions.map((minute) => (
@@ -177,11 +226,15 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 
           {/* AM/PM */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Period</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Period
+            </label>
             <div className="relative">
               <select
                 value={arrivalPeriod}
-                onChange={(e) => handleArrivalTimeChange(undefined, undefined, e.target.value)}
+                onChange={(e) =>
+                  handleArrivalTimeChange(undefined, undefined, e.target.value)
+                }
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4d3a00] focus:border-[#4d3a00] appearance-none cursor-pointer"
               >
                 <option value="AM">AM</option>
@@ -193,20 +246,23 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
         </div>
         <div className="mt-3 p-3 bg-gray-50 rounded-lg">
           <span className="text-sm text-gray-600">
-            Arrival time: <span className="font-semibold text-gray-900">{arrivalHour}:{arrivalMinute} {arrivalPeriod}</span>
+            Arrival time:{" "}
+            <span className="font-semibold text-gray-900">
+              {arrivalHour}:{arrivalMinute} {arrivalPeriod}
+            </span>
           </span>
         </div>
       </div>
 
       {/* Checkout Time Selection */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Departure Time
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Done by</h3>
         <div className="grid grid-cols-3 gap-3">
           {/* Hour */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Hour</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Hour
+            </label>
             <div className="relative">
               <select
                 value={checkoutHour}
@@ -225,11 +281,15 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 
           {/* Minute */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Minute</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Minute
+            </label>
             <div className="relative">
               <select
                 value={checkoutMinute}
-                onChange={(e) => handleCheckoutTimeChange(undefined, e.target.value)}
+                onChange={(e) =>
+                  handleCheckoutTimeChange(undefined, e.target.value)
+                }
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4d3a00] focus:border-[#4d3a00] appearance-none cursor-pointer"
               >
                 {minuteOptions.map((minute) => (
@@ -244,11 +304,15 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
 
           {/* AM/PM */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Period</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Period
+            </label>
             <div className="relative">
               <select
                 value={checkoutPeriod}
-                onChange={(e) => handleCheckoutTimeChange(undefined, undefined, e.target.value)}
+                onChange={(e) =>
+                  handleCheckoutTimeChange(undefined, undefined, e.target.value)
+                }
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4d3a00] focus:border-[#4d3a00] appearance-none cursor-pointer"
               >
                 <option value="AM">AM</option>
@@ -260,7 +324,10 @@ const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
         </div>
         <div className="mt-3 p-3 bg-gray-50 rounded-lg">
           <span className="text-sm text-gray-600">
-            Departure time: <span className="font-semibold text-gray-900">{checkoutHour}:{checkoutMinute} {checkoutPeriod}</span>
+            Departure time:{" "}
+            <span className="font-semibold text-gray-900">
+              {checkoutHour}:{checkoutMinute} {checkoutPeriod}
+            </span>
           </span>
         </div>
       </div>

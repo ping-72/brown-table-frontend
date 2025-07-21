@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { 
-  Calendar, 
-  Bell, 
-  LogOut, 
-  UserPlus, 
+import {
+  Calendar,
+  Bell,
+  LogOut,
+  UserPlus,
   Menu as MenuIcon,
   X,
   Home,
   ChefHat,
-  Coffee
+  Coffee,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -19,15 +19,16 @@ const Header: React.FC = () => {
   const { user, isAuthenticated, logout, notificationCount } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const currentView = location.pathname === "/" ? "main-menu" : location.pathname.slice(1);
+  const currentView =
+    location.pathname === "/" ? "main-menu" : location.pathname.slice(1);
 
   const handleLogout = () => {
     logout();
-    navigate('/auth/login');
+    navigate("/auth/login");
     setIsMobileMenuOpen(false);
   };
 
-  const isAuthPage = location.pathname.startsWith('/auth');
+  const isAuthPage = location.pathname.startsWith("/auth");
 
   // Don't show header on auth pages
   if (isAuthPage) {
@@ -39,7 +40,12 @@ const Header: React.FC = () => {
     { path: "/menu", label: "Menu", key: "menu" },
     { path: "/booking", label: "Book Table", key: "booking" },
     { path: "/groups", label: "My Groups", key: "groups" },
-    { path: "/notifications", label: "Notifications", key: "notifications", badge: notificationCount },
+    {
+      path: "/notifications",
+      label: "Notifications",
+      key: "notifications",
+      badge: notificationCount,
+    },
   ];
 
   const handleNavigation = (path: string) => {
@@ -63,9 +69,9 @@ const Header: React.FC = () => {
               onClick={() => navigate("/")}
               className="flex items-center space-x-3 text-xl font-bold text-white hover:text-cream transition-colors group"
             >
-              <img 
-                src="/coffee.png" 
-                alt="Coffee Cup" 
+              <img
+                src="/coffee.png"
+                alt="Coffee Cup"
                 className="w-24 h-24 object-contain group-hover:scale-110 transition-transform"
               />
               <span className="font-serif text-cream group-hover:text-white transition-colors">
@@ -76,15 +82,23 @@ const Header: React.FC = () => {
             {/* Mobile User Menu */}
             {isAuthenticated && (
               <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold ${user?.color || 'bg-coffee-600'}`}>
-                  {user?.avatar || user?.name?.charAt(0) || 'U'}
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold ${
+                    user?.color || "bg-coffee-600"
+                  }`}
+                >
+                  {user?.avatar || user?.name?.charAt(0) || "U"}
                 </div>
-                
+
                 <button
                   onClick={toggleMobileMenu}
                   className="p-2 text-cream hover:text-white hover:bg-white/10 rounded-lg transition-colors"
                 >
-                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+                  {isMobileMenuOpen ? (
+                    <X className="w-6 h-6" />
+                  ) : (
+                    <MenuIcon className="w-6 h-6" />
+                  )}
                 </button>
               </div>
             )}
@@ -99,9 +113,9 @@ const Header: React.FC = () => {
                 onClick={() => navigate("/")}
                 className="flex items-center space-x-4 text-3xl font-bold text-white hover:text-cream transition-colors group"
               >
-                <img 
-                  src="/coffee.png" 
-                  alt="Coffee Cup" 
+                <img
+                  src="/coffee.png"
+                  alt="Coffee Cup"
                   className="w-24 h-24 object-contain group-hover:scale-110 transition-transform"
                 />
                 <span className="font-serif text-cream group-hover:text-white transition-colors">
@@ -123,9 +137,10 @@ const Header: React.FC = () => {
                   }`}
                 >
                   {item.label}
-                  {item.badge && item.badge > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                      {item.badge > 9 ? '9+' : item.badge}
+                  {/* Show notification badge only on desktop and only if > 0 */}
+                  {item.key === "notifications" && (item.badge ?? 0) > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse lg:flex hidden">
+                      {(item.badge ?? 0) > 9 ? "9+" : item.badge}
                     </span>
                   )}
                   {/* Active indicator */}
@@ -140,14 +155,18 @@ const Header: React.FC = () => {
                 <>
                   <div className="h-6 w-px bg-coffee-700/30 mx-4"></div>
                   <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold ${user?.color || 'bg-coffee-600'}`}>
-                      {user?.avatar || user?.name?.charAt(0) || 'U'}
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold ${
+                        user?.color || "bg-coffee-600"
+                      }`}
+                    >
+                      {user?.avatar || user?.name?.charAt(0) || "U"}
                     </div>
                     <span className="text-cream text-sm font-medium">
-                      {user?.name || 'User'}
+                      {user?.name || "User"}
                     </span>
                   </div>
-                  
+
                   <button
                     onClick={handleLogout}
                     className="flex items-center space-x-2 px-3 py-2 text-cream hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
@@ -176,30 +195,30 @@ const Header: React.FC = () => {
                   }`}
                 >
                   <span className="font-medium">{item.label}</span>
-                  {item.badge && item.badge > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                      {item.badge > 9 ? '9+' : item.badge}
-                    </span>
-                  )}
+                  {/* Remove notification badge from mobile menu */}
                 </button>
               ))}
-              
+
               {/* Mobile User Info */}
               <div className="pt-4 mt-4 border-t border-coffee-700/30">
                 <div className="flex items-center space-x-3 px-4 py-2 mb-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${user?.color || 'bg-coffee-600'}`}>
-                    {user?.avatar || user?.name?.charAt(0) || 'U'}
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
+                      user?.color || "bg-coffee-600"
+                    }`}
+                  >
+                    {user?.avatar || user?.name?.charAt(0) || "U"}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">
-                      {user?.name || 'User'}
+                      {user?.name || "User"}
                     </p>
                     <p className="text-xs text-cream truncate">
-                      {user?.phone || ''}
+                      {user?.phone || ""}
                     </p>
                   </div>
                 </div>
-                
+
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center space-x-3 px-4 py-3 text-left text-cream hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
